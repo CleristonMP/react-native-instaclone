@@ -6,6 +6,7 @@ import {
   StyleSheet,
   ImageSourcePropType,
 } from 'react-native';
+import Author from './Author';
 
 type Props = {
   image: ImageSourcePropType;
@@ -16,6 +17,7 @@ export default class Post extends Component<Props> {
     return (
       <View style={styles.container}>
         <Image source={this.props.image} style={styles.image} />
+        <Author email="fulano@gmail.com" nickname="Fulano de Tal" />
       </View>
     );
   }
