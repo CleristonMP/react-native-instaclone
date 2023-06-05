@@ -7,9 +7,11 @@ import {
   ImageSourcePropType,
 } from 'react-native';
 import Author from './Author';
+import Comments from './Comments';
 
 type Props = {
   image: ImageSourcePropType;
+  comments: any[];
 };
 
 export default class Post extends Component<Props> {
@@ -18,6 +20,7 @@ export default class Post extends Component<Props> {
       <View style={styles.container}>
         <Image source={this.props.image} style={styles.image} />
         <Author email="fulano@gmail.com" nickname="Fulano de Tal" />
+        <Comments comments={this.props.comments} />
       </View>
     );
   }
