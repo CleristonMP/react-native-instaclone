@@ -18,6 +18,11 @@ export default class Login extends Component {
     componentProps.navigation.navigate('Profile');
   };
 
+  handleRegisterBtnPress = () => {
+    const componentProps: any = this.props;
+    componentProps.navigation.navigate('Register');
+  };
+
   render() {
     return (
       <View style={styles.container}>
@@ -32,14 +37,15 @@ export default class Login extends Component {
         <TextInput
           placeholder="Senha"
           style={styles.input}
-          autoFocus={true}
           value={this.state.password}
           onChangeText={password => this.setState({password})}
         />
         <TouchableOpacity onPress={this.login} style={styles.button}>
           <Text style={styles.btnText}>Login</Text>
         </TouchableOpacity>
-        <TouchableOpacity onPress={() => {}} style={styles.button}>
+        <TouchableOpacity
+          onPress={this.handleRegisterBtnPress}
+          style={styles.button}>
           <Text style={styles.btnText}>Criar nova conta...</Text>
         </TouchableOpacity>
       </View>

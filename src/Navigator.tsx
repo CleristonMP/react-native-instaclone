@@ -17,6 +17,7 @@ import Feed from './screens/Feed';
 import AddPhoto from './screens/AddPhoto';
 import Profile from './screens/Profile';
 import Login from './screens/Login';
+import Register from './screens/Register';
 
 const Tab = createBottomTabNavigator();
 const Stack = createNativeStackNavigator();
@@ -75,9 +76,12 @@ const TabNavigator = () => {
 
 const AuthNavigator = () => {
   return (
-    <Stack.Navigator screenOptions={{headerShown: false}}>
+    <Stack.Navigator
+      screenOptions={{headerShown: false}}
+      initialRouteName="Home">
       <Stack.Screen name="Home" component={TabNavigator} />
       <Stack.Screen name="Auth" component={Login} />
+      <Stack.Screen name="Register" component={Register} />
     </Stack.Navigator>
   );
 };
