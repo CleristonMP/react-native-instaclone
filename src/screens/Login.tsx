@@ -1,4 +1,4 @@
-import React, {Component} from 'react';
+import React, {useState} from 'react';
 import {
   Text,
   StyleSheet,
@@ -7,51 +7,45 @@ import {
   TouchableOpacity,
 } from 'react-native';
 
-export default class Login extends Component {
-  state = {
-    email: '',
-    password: '',
-  };
+import useUser from '../data/hooks/useUser';
 
-  login = () => {
-    const componentProps: any = this.props;
-    componentProps.navigation.navigate('Profile');
-  };
+export default (props: any) => {
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  const {login} = useUser();
 
-  handleRegisterBtnPress = () => {
-    const componentProps: any = this.props;
-    componentProps.navigation.navigate('Register');
-  };
-
-  render() {
-    return (
-      <View style={styles.container}>
-        <TextInput
-          placeholder="Email"
-          style={styles.input}
-          autoFocus={true}
-          keyboardType="email-address"
-          value={this.state.email}
-          onChangeText={email => this.setState({email})}
-        />
-        <TextInput
-          placeholder="Senha"
-          style={styles.input}
-          value={this.state.password}
-          onChangeText={password => this.setState({password})}
-        />
-        <TouchableOpacity onPress={this.login} style={styles.button}>
-          <Text style={styles.btnText}>Login</Text>
-        </TouchableOpacity>
-        <TouchableOpacity
-          onPress={this.handleRegisterBtnPress}
-          style={styles.button}>
-          <Text style={styles.btnText}>Criar nova conta...</Text>
-        </TouchableOpacity>
-      </View>
-    );
-  }
-}
+  return (
+    <View style={styles.container}>
+      <TextInput
+        placeholder="Email"
+        style={styles.input}
+        autoFocus={true}
+        keyboardType="email-address"
+        value={email}
+        onChangeText={setEmail}
+      />
+      <TextInput
+        placeholder="Senha"
+        style={styles.input}
+        value={password}
+        secureTextEntry
+        onChangeText={setPassword}
+      />
+      <TouchableOpacity
+        onPress={() => login(email, password)}
+        style={styles.button}>
+        <Text style={styles.btnText}>Login</Text>
+      </TouchableOpacity>
+      <TouchableOpacity
+        onPress={() => {
+          props.navigation.navigate('Register');
+        }}
+        style={styles.button}>
+        <Text style={styles.btnText}>Criar nova conta...</Text>
+      </TouchableOpacity>
+    </View>
+  );
+};
 
 const styles = StyleSheet.create({
   container: {

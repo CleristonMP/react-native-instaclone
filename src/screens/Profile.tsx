@@ -1,27 +1,24 @@
-import React, {Component} from 'react';
+import React from 'react';
 import {Text, StyleSheet, View, TouchableOpacity} from 'react-native';
 import {Gravatar} from 'react-native-gravatar';
+import useUser from '../data/hooks/useUser';
 
-export default class Profile extends Component {
-  logout = () => {
-    const componentProps: any = this.props;
-    componentProps.navigation.navigate('Auth');
-  };
+export default () => {
+  const {name, email, logout} = useUser();
 
-  render() {
-    const options = {email: 'fulano@gmail.com', secure: true};
-    return (
-      <View style={styles.container}>
-        <Gravatar options={options} style={styles.avatar} />
-        <Text style={styles.nickname}>Fulano</Text>
-        <Text style={styles.email}>fulano@gmail.com</Text>
-        <TouchableOpacity onPress={this.logout} style={styles.button}>
-          <Text style={styles.btnText}>Sair</Text>
-        </TouchableOpacity>
-      </View>
-    );
-  }
-}
+  const options = {email, secure: true};
+
+  return (
+    <View style={styles.container}>
+      <Gravatar options={options} style={styles.avatar} />
+      <Text style={styles.nickname}>{name}</Text>
+      <Text style={styles.email}>{email}</Text>
+      <TouchableOpacity onPress={logout} style={styles.button}>
+        <Text style={styles.btnText}>Sair</Text>
+      </TouchableOpacity>
+    </View>
+  );
+};
 
 const styles = StyleSheet.create({
   container: {

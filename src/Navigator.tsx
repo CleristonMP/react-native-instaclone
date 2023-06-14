@@ -18,6 +18,7 @@ import AddPhoto from './screens/AddPhoto';
 import Profile from './screens/Profile';
 import Login from './screens/Login';
 import Register from './screens/Register';
+import useUser from './data/hooks/useUser';
 
 const Tab = createBottomTabNavigator();
 const Stack = createNativeStackNavigator();
@@ -75,12 +76,23 @@ const TabNavigator = () => {
 };
 
 const AuthNavigator = () => {
+  const {email} = useUser();
+
+  const authOrProfile = () => {
+    if (email) {
+      return TabNavigator;
+    } else {
+      return Login;
+    }
+  };
+
+  const teste = authOrProfile();
+
   return (
     <Stack.Navigator
       screenOptions={{headerShown: false}}
       initialRouteName="Home">
-      <Stack.Screen name="Home" component={TabNavigator} />
-      <Stack.Screen name="Auth" component={Login} />
+      <Stack.Screen name="Home" component={teste} />
       <Stack.Screen name="Register" component={Register} />
     </Stack.Navigator>
   );
@@ -95,3 +107,37 @@ const Navigator = () => {
 };
 
 export default Navigator;
+
+/*
+const TabNavigator = () => {
+  return (
+    <Tab.Navigator initialRouteName="Profile" screenOptions={screenOptions}>
+      <Tab.Screen name="Feed" component={Feed} />
+      <Tab.Screen name="AddPhoto" component={AddPhoto} />
+      <Tab.Screen name="Profile" component={Profile} />
+    </Tab.Navigator>
+  );
+};
+
+const AuthNavigator = () => {
+  return (
+    <Stack.Navigator
+      screenOptions={{headerShown: false}}
+      initialRouteName="Auth">
+      <Stack.Screen name="Auth" component={Login} />
+      <Stack.Screen name="Home" component={TabNavigator} />
+      <Stack.Screen name="Register" component={Register} />
+    </Stack.Navigator>
+  );
+};
+
+const Navigator = () => {
+  return (
+    <NavigationContainer>
+      <AuthNavigator />
+    </NavigationContainer>
+  );
+};
+
+export default Navigator;
+*/

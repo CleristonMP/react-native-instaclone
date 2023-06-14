@@ -1,21 +1,31 @@
 import React from 'react';
-import {Component} from 'react';
 import {View, Image, Text, StyleSheet, Platform} from 'react-native';
-
+import {Gravatar} from 'react-native-gravatar';
 import icon from '../../assets/imgs/icon.png';
 
-class Header extends Component {
-  render() {
-    return (
-      <View style={styles.container}>
-        <View style={styles.rowContainer}>
-          <Image source={icon} style={styles.image} />
-          <Text style={styles.title}>Lambe lambe</Text>
-        </View>
+import useUser from '../data/hooks/useUser';
+
+export default () => {
+  const {name, email} = useUser();
+
+  const username = name || 'Anonymous';
+  const gravatar = email ? (
+    <Gravatar options={{email, secure: true}} style={styles.avatar} />
+  ) : null;
+
+  return (
+    <View style={styles.container}>
+      <View style={styles.rowContainer}>
+        <Image source={icon} style={styles.image} />
+        <Text style={styles.title}>Lambe lambe</Text>
       </View>
-    );
-  }
-}
+      <View style={styles.userContainer}>
+        <Text style={styles.user}>{username}</Text>
+        {gravatar}
+      </View>
+    </View>
+  );
+};
 
 const styles = StyleSheet.create({
   container: {
@@ -24,6 +34,8 @@ const styles = StyleSheet.create({
     borderBottomWidth: 1,
     borderColor: '#BBB',
     width: '100%',
+    flexDirection: 'row',
+    justifyContent: 'space-between',
   },
   rowContainer: {
     flexDirection: 'row',
@@ -40,6 +52,17 @@ const styles = StyleSheet.create({
     height: 30,
     fontSize: 28,
   },
+  userContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+  user: {
+    fontSize: 10,
+    color: '#888',
+  },
+  avatar: {
+    width: 30,
+    height: 30,
+    marginLeft: 10,
+  },
 });
-
-export default Header;
