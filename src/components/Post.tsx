@@ -12,7 +12,7 @@ export default (props: any) => {
 
   return (
     <View style={styles.container}>
-      <Image source={props.image} style={styles.image} />
+      {props.image && <Image source={props.image} style={styles.image} />}
       <Author email={props.email} nickname={props.nickname} />
       <Comments comments={props.comments} />
       {addComment}

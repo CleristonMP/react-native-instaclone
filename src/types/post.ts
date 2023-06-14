@@ -4,6 +4,6 @@ export type PostType = {
   id: number;
   nickname: string;
   email: string;
-  image: string;
+  image: any;
   comments: CommentType[];
 };

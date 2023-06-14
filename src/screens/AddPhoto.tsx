@@ -5,22 +5,35 @@ import {
   View,
   Platform,
   Dimensions,
-  Alert,
   ScrollView,
   Image,
   TouchableOpacity,
   TextInput,
 } from 'react-native';
 import {launchCamera, launchImageLibrary} from 'react-native-image-picker';
+import useUser from '../data/hooks/useUser';
+import useFeed from '../data/hooks/useFeed';
+import {PostType} from '../types/post';
 
-type Img = {
-  uri: string | undefined;
-  base64: string | undefined;
-};
-
-export default () => {
-  const [image, setImage] = useState<Img>();
+export default (props: any) => {
+  const [image, setImage] = useState<any>();
   const [comment, setComment] = useState('');
+
+  const {addPost} = useFeed();
+  const {name: nickname, email} = useUser();
+
+  const [newPost, setNewPost] = useState<PostType>({
+    id: Math.random(),
+    email,
+    nickname,
+    image,
+    comments: [
+      {
+        nickname,
+        comment,
+      },
+    ],
+  });
 
   const pickImage = () => {
     launchImageLibrary(
@@ -32,7 +45,9 @@ export default () => {
       },
       resp => {
         if (!resp.didCancel) {
-          setImage({uri: resp.assets![0].uri, base64: resp.assets![0].base64});
+          const pickedImg = resp.assets !== undefined ? resp.assets[0] : null;
+          setImage(pickedImg);
+          setNewPost({...newPost, image: pickedImg});
         }
       },
     );
@@ -49,14 +64,24 @@ export default () => {
       },
       resp => {
         if (!resp.didCancel) {
-          setImage({uri: resp.assets![0].uri, base64: resp.assets![0].base64});
+          const pickedImg = resp.assets !== undefined ? resp.assets[0] : null;
+          setImage(pickedImg);
+          setNewPost({...newPost, image: pickedImg});
         }
       },
     );
   };
 
-  const save = async () => {
-    Alert.alert('Imagem adicionada!', comment);
+  const handleCommentChange = (newComment: string) => {
+    setComment(newComment);
+    setNewPost({...newPost, comments: [{nickname, comment}]});
+  };
+
+  const save = () => {
+    addPost({...newPost, id: Math.random()});
+    setImage(null);
+    setComment('');
+    props.navigation.navigate('Feed');
   };
 
   return (
@@ -78,7 +103,7 @@ export default () => {
           placeholder="Algum comentário para a foto?"
           style={styles.input}
           value={comment}
-          onChangeText={text => setComment(text)}
+          onChangeText={handleCommentChange}
         />
         <TouchableOpacity onPress={save} style={styles.button}>
           <Text style={styles.btnText}>Salvar</Text>

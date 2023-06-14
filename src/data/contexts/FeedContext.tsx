@@ -12,7 +12,6 @@ const FeedContext = createContext({
 });
 
 export const FeedProvider = ({children}: any) => {
-  const [initialPosts] = useState<PostType[]>(mockPosts);
   const [posts, setPosts] = useState<PostType[]>([]);
   const {startingUpload, finishedUpload, setMessage} = useEvent();
 
@@ -21,7 +20,7 @@ export const FeedProvider = ({children}: any) => {
     fetchPosts: async function () {
       try {
         // const res = await axios.get('/posts.json');
-        const rawPosts = initialPosts;
+        const rawPosts = [...mockPosts];
         const postsTemp: PostType[] = [];
         for (let key in rawPosts) {
           postsTemp.push({
@@ -34,24 +33,16 @@ export const FeedProvider = ({children}: any) => {
         setMessage(err.message, 'Erro');
       }
     },
-    addPost: async function (post: PostType) {
+    addPost: function (post: PostType) {
       try {
         startingUpload();
+
         const newPosts = [...posts];
         newPosts.push(post);
         setPosts(newPosts);
-        // const resStorage = await axios({
-        //   url: 'uploadImage',
-        //   baseURL: 'https://us-central1-instaclone-b78e8.cloudfunctions.net',
-        //   method: 'post',
-        //   data: {
-        //     image: post.image.base64,
-        //   },
-        // });
-        // post.image = resStorage.data.imageUrl;
-        // await axios.post(`/posts.json?auth=${token}`, post);
+
         finishedUpload();
-        feedInternalContext.fetchPosts();
+        // feedInternalContext.fetchPosts();
       } catch (err: any) {
         setMessage(err.message, 'Erro');
         finishedUpload();

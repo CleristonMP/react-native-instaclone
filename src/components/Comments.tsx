@@ -1,8 +1,9 @@
 import React, {Component} from 'react';
 import {View, Text, StyleSheet} from 'react-native';
+import {CommentType} from '../types/comment';
 
 type Props = {
-  comments: any[];
+  comments: CommentType[];
 };
 
 export default class Comments extends Component<Props> {
