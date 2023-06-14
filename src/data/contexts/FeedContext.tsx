@@ -57,8 +57,13 @@ export const FeedProvider = ({children}: any) => {
         finishedUpload();
       }
     },
-    addComment: async function (_postId: number, _comment: CommentType) {
+    addComment: async function (postId: number, comment: CommentType) {
       try {
+        const tempPosts = [...posts];
+        tempPosts.find(post => post.id === postId)?.comments.push(comment);
+        setPosts(tempPosts);
+        feedInternalContext.fetchPosts();
+
         // const res = await axios.get(`/posts/${postId}.json`);
         // const comments = res.data.comments || [];
         // comments.push(comment);
