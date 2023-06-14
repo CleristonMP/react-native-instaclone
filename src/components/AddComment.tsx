@@ -1,56 +1,57 @@
-import React, {Component} from 'react';
+import React, {useState} from 'react';
 import {
   View,
   Text,
   StyleSheet,
   TextInput,
   TouchableWithoutFeedback as TWF,
-  Alert,
 } from 'react-native';
 import Icon from 'react-native-vector-icons/FontAwesome';
+import useFeed from '../data/hooks/useFeed';
+import useUser from '../data/hooks/useUser';
 
-export default class AddComment extends Component {
-  state = {
-    comment: '',
-    editMode: false,
+export default ({postId}: any) => {
+  const [comment, setComment] = useState('');
+  const [editMode, setEditMode] = useState(false);
+  const {addComment} = useFeed();
+  const {name: nickname} = useUser();
+
+  const handleAddComment = () => {
+    addComment(postId, {nickname, comment});
+    setComment('');
+    setEditMode(false);
   };
 
-  handleAddComment = () => {
-    Alert.alert('Adicionado!', this.state.comment);
-  };
-
-  render() {
-    let commentArea = null;
-    if (this.state.editMode) {
-      commentArea = (
-        <View style={styles.container}>
-          <TextInput
-            placeholder="Pode comentar..."
-            style={styles.input}
-            autoFocus={true}
-            value={this.state.comment}
-            onChangeText={comment => this.setState({comment})}
-            onSubmitEditing={this.handleAddComment}
-          />
-          <TWF onPress={() => this.setState({editMode: false})}>
-            <Icon name="times" size={15} color="#555" />
-          </TWF>
-        </View>
-      );
-    } else {
-      commentArea = (
-        <TWF onPress={() => this.setState({editMode: true})}>
-          <View style={styles.container}>
-            <Icon name="comment-o" size={25} color="#555" />
-            <Text style={styles.caption}>Adicione um comentário...</Text>
-          </View>
+  let commentArea = null;
+  if (editMode) {
+    commentArea = (
+      <View style={styles.container}>
+        <TextInput
+          placeholder="Pode comentar..."
+          style={styles.input}
+          autoFocus={true}
+          value={comment}
+          onChangeText={setComment}
+          onSubmitEditing={handleAddComment}
+        />
+        <TWF onPress={() => setEditMode(false)}>
+          <Icon name="times" size={15} color="#555" />
         </TWF>
-      );
-    }
-
-    return <View style={styles.commentArea}>{commentArea}</View>;
+      </View>
+    );
+  } else {
+    commentArea = (
+      <TWF onPress={() => setEditMode(true)}>
+        <View style={styles.container}>
+          <Icon name="comment-o" size={25} color="#555" />
+          <Text style={styles.caption}>Adicione um comentário...</Text>
+        </View>
+      </TWF>
+    );
   }
-}
+
+  return <View style={styles.commentArea}>{commentArea}</View>;
+};
 
 const styles = StyleSheet.create({
   commentArea: {

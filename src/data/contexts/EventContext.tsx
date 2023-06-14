@@ -1,6 +1,16 @@
 import React, {createContext, useState} from 'react';
 
-const EventContext = createContext({});
+const EventContext = createContext({
+  uploading: false,
+  messageTitle: '',
+  message: '',
+  splash: true,
+  startingUpload: () => {},
+  finishedUpload: () => {},
+  setMessage: (_newMessage: string, _title: string) => {},
+  clearMessage: () => {},
+  endSplash: () => {},
+});
 
 export const EventProvider = ({children}: any) => {
   const [uploading, setUploading] = useState(false);

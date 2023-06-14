@@ -1,34 +1,24 @@
-import React, {Component} from 'react';
-import {
-  View,
-  Image,
-  Dimensions,
-  StyleSheet,
-  ImageSourcePropType,
-} from 'react-native';
+import React from 'react';
+import {View, Image, Dimensions, StyleSheet} from 'react-native';
 import Author from './Author';
 import Comments from './Comments';
 import AddComment from './AddComment';
+import useUser from '../data/hooks/useUser';
 
-type Props = {
-  image: ImageSourcePropType;
-  comments: any[];
-  email: string;
-  nickname: string;
+export default (props: any) => {
+  const {email} = useUser();
+
+  const addComment = email ? <AddComment postId={props.id} /> : null;
+
+  return (
+    <View style={styles.container}>
+      <Image source={props.image} style={styles.image} />
+      <Author email={props.email} nickname={props.nickname} />
+      <Comments comments={props.comments} />
+      {addComment}
+    </View>
+  );
 };
-
-export default class Post extends Component<Props> {
-  render() {
-    return (
-      <View style={styles.container}>
-        <Image source={this.props.image} style={styles.image} />
-        <Author email={this.props.email} nickname={this.props.nickname} />
-        <Comments comments={this.props.comments} />
-        <AddComment />
-      </View>
-    );
-  }
-}
 
 const styles = StyleSheet.create({
   container: {
