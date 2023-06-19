@@ -14,6 +14,7 @@ import {launchCamera, launchImageLibrary} from 'react-native-image-picker';
 import useUser from '../data/hooks/useUser';
 import useFeed from '../data/hooks/useFeed';
 import {PostType} from '../types/post';
+import useEvent from '../data/hooks/useEvent';
 
 export default (props: any) => {
   const [image, setImage] = useState<any>();
@@ -21,6 +22,9 @@ export default (props: any) => {
 
   const {addPost} = useFeed();
   const {name: nickname, email} = useUser();
+  const {uploading} = useEvent();
+
+  const canEdit = () => email != null && email.trim() !== '' && !uploading;
 
   const [newPost, setNewPost] = useState<PostType>({
     id: Math.random(),
@@ -92,10 +96,16 @@ export default (props: any) => {
           {image && <Image source={{uri: image.uri}} style={styles.image} />}
         </View>
         <View style={styles.btnRow}>
-          <TouchableOpacity onPress={pickPhoto} style={styles.button}>
+          <TouchableOpacity
+            onPress={pickPhoto}
+            disabled={!canEdit()}
+            style={[styles.button, canEdit() ? {} : styles.btnDisabled]}>
             <Text style={styles.btnText}>Tirar uma foto</Text>
           </TouchableOpacity>
-          <TouchableOpacity onPress={pickImage} style={styles.button}>
+          <TouchableOpacity
+            onPress={pickImage}
+            disabled={!canEdit()}
+            style={[styles.button, canEdit() ? {} : styles.btnDisabled]}>
             <Text style={styles.btnText}>Escolha a foto</Text>
           </TouchableOpacity>
         </View>
@@ -104,8 +114,12 @@ export default (props: any) => {
           style={styles.input}
           value={comment}
           onChangeText={handleCommentChange}
+          editable={canEdit()}
         />
-        <TouchableOpacity onPress={save} style={styles.button}>
+        <TouchableOpacity
+          onPress={save}
+          disabled={!canEdit()}
+          style={[styles.button, canEdit() ? {} : styles.btnDisabled]}>
           <Text style={styles.btnText}>Salvar</Text>
         </TouchableOpacity>
       </View>
@@ -151,5 +165,8 @@ const styles = StyleSheet.create({
   input: {
     marginTop: 20,
     width: '90%',
+  },
+  btnDisabled: {
+    backgroundColor: '#666',
   },
 });

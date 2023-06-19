@@ -78,21 +78,13 @@ const TabNavigator = () => {
 const AuthNavigator = () => {
   const {email} = useUser();
 
-  const authOrProfile = () => {
-    if (email) {
-      return TabNavigator;
-    } else {
-      return Login;
-    }
-  };
-
-  const teste = authOrProfile();
+  const authOrProfile = email ? TabNavigator : Login;
 
   return (
     <Stack.Navigator
       screenOptions={{headerShown: false}}
       initialRouteName="Home">
-      <Stack.Screen name="Home" component={teste} />
+      <Stack.Screen name="Home" component={authOrProfile} />
       <Stack.Screen name="Register" component={Register} />
     </Stack.Navigator>
   );
