@@ -1,4 +1,4 @@
-package com.lambe;
+package com.instaclone;
 
 import android.app.Application;
 import com.facebook.react.PackageList;

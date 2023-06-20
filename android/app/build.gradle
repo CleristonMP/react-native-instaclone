@@ -93,9 +93,9 @@ android {
 
     compileSdkVersion rootProject.ext.compileSdkVersion
 
-    namespace "com.lambe"
+    namespace "com.instaclone"
     defaultConfig {
-        applicationId "com.lambe"
+        applicationId "com.instaclone"
         minSdkVersion rootProject.ext.minSdkVersion
         targetSdkVersion rootProject.ext.targetSdkVersion
         versionCode 1

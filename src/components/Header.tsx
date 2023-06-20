@@ -17,7 +17,7 @@ export default () => {
     <View style={styles.container}>
       <View style={styles.rowContainer}>
         <Image source={icon} style={styles.image} />
-        <Text style={styles.title}>Lambe lambe</Text>
+        <Text style={styles.title}>instaclone instaclone</Text>
       </View>
       <View style={styles.userContainer}>
         <Text style={styles.user}>{username}</Text>
