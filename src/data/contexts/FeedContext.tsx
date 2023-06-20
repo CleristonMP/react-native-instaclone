@@ -2,6 +2,7 @@ import React, {createContext, useState} from 'react';
 import useEvent from '../hooks/useEvent';
 import {PostType} from '../../types/post';
 import {CommentType} from '../../types/comment';
+import firestore from '@react-native-firebase/firestore';
 import mockPosts from '../mocks/mockPosts';
 
 const FeedContext = createContext({
@@ -14,6 +15,8 @@ const FeedContext = createContext({
 export const FeedProvider = ({children}: any) => {
   const [posts, setPosts] = useState<PostType[]>([]);
   const {startingUpload, finishedUpload, setMessage} = useEvent();
+
+  const ref = firestore().collection('posts');
 
   const feedInternalContext = {
     posts,
@@ -33,13 +36,22 @@ export const FeedProvider = ({children}: any) => {
         setMessage(err.message, 'Erro');
       }
     },
-    addPost: function (post: PostType) {
+    addPost: async function (post: PostType) {
       try {
         startingUpload();
 
-        const newPosts = [...posts];
-        newPosts.push(post);
-        setPosts(newPosts);
+        await ref
+          .add({...post, id: null, image: null})
+          .then(resp => {
+            console.warn(Object.keys(resp));
+          })
+          .catch(e => {
+            console.error(e);
+          });
+
+        // const newPosts = [...posts];
+        // newPosts.push(post);
+        // setPosts(newPosts);
 
         finishedUpload();
         // feedInternalContext.fetchPosts();

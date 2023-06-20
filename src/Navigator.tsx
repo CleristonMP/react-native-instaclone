@@ -99,37 +99,3 @@ const Navigator = () => {
 };
 
 export default Navigator;
-
-/*
-const TabNavigator = () => {
-  return (
-    <Tab.Navigator initialRouteName="Profile" screenOptions={screenOptions}>
-      <Tab.Screen name="Feed" component={Feed} />
-      <Tab.Screen name="AddPhoto" component={AddPhoto} />
-      <Tab.Screen name="Profile" component={Profile} />
-    </Tab.Navigator>
-  );
-};
-
-const AuthNavigator = () => {
-  return (
-    <Stack.Navigator
-      screenOptions={{headerShown: false}}
-      initialRouteName="Auth">
-      <Stack.Screen name="Auth" component={Login} />
-      <Stack.Screen name="Home" component={TabNavigator} />
-      <Stack.Screen name="Register" component={Register} />
-    </Stack.Navigator>
-  );
-};
-
-const Navigator = () => {
-  return (
-    <NavigationContainer>
-      <AuthNavigator />
-    </NavigationContainer>
-  );
-};
-
-export default Navigator;
-*/
