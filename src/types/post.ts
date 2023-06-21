@@ -1,7 +1,7 @@
 import {CommentType} from './comment';
 
 export type PostType = {
-  id: number | null;
+  id: string | number | null;
   nickname: string;
   email: string;
   image: any;

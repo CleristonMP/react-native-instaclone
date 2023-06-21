@@ -16,22 +16,7 @@ import useFeed from '../data/hooks/useFeed';
 import {PostType} from '../types/post';
 import useEvent from '../data/hooks/useEvent';
 
-// import firestore from '@react-native-firebase/firestore';
-
 export default (props: any) => {
-  // const ref = firestore().collection('posts');
-
-  // async function addFirestorePost(post: PostType) {
-  //   await ref
-  //     .add({post})
-  //     .then(resp => {
-  //       console.warn(resp);
-  //     })
-  //     .catch(e => {
-  //       console.warn(e);
-  //     });
-  // }
-
   const [image, setImage] = useState<any>();
   const [comment, setComment] = useState('');
 
@@ -54,8 +39,8 @@ export default (props: any) => {
     ],
   });
 
-  const pickImage = () => {
-    launchImageLibrary(
+  const pickImage = async () => {
+    await launchImageLibrary(
       {
         mediaType: 'photo',
         includeBase64: true,
@@ -72,8 +57,8 @@ export default (props: any) => {
     );
   };
 
-  const pickPhoto = () => {
-    launchCamera(
+  const pickPhoto = async () => {
+    await launchCamera(
       {
         mediaType: 'photo',
         includeBase64: true,
@@ -97,7 +82,6 @@ export default (props: any) => {
   };
 
   const save = () => {
-    // addFirestorePost({...newPost, id: null, image: null});
     addPost({...newPost, id: Math.random()});
     setImage(null);
     setComment('');

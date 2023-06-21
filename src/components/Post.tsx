@@ -1,5 +1,11 @@
 import React from 'react';
-import {View, Image, Dimensions, StyleSheet} from 'react-native';
+import {
+  View,
+  Image,
+  Dimensions,
+  StyleSheet,
+  ImageSourcePropType,
+} from 'react-native';
 import Author from './Author';
 import Comments from './Comments';
 import AddComment from './AddComment';
@@ -8,11 +14,23 @@ import useUser from '../data/hooks/useUser';
 export default (props: any) => {
   const {email} = useUser();
 
+  const getImage = (source: any): ImageSourcePropType => {
+    if (typeof source === 'number') {
+      return source;
+    }
+    if (typeof source === 'string') {
+      return {uri: source};
+    }
+    return 0;
+  };
+
   const addComment = email ? <AddComment postId={props.id} /> : null;
 
   return (
     <View style={styles.container}>
-      {props.image && <Image source={props.image} style={styles.image} />}
+      {props.image && (
+        <Image source={getImage(props.image)} style={styles.image} />
+      )}
       <Author email={props.email} nickname={props.nickname} />
       <Comments comments={props.comments} />
       {addComment}

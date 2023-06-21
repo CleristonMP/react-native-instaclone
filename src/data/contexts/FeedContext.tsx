@@ -3,7 +3,7 @@ import useEvent from '../hooks/useEvent';
 import {PostType} from '../../types/post';
 import {CommentType} from '../../types/comment';
 import firestore from '@react-native-firebase/firestore';
-import mockPosts from '../mocks/mockPosts';
+import storage from '@react-native-firebase/storage';
 
 const FeedContext = createContext({
   posts: [] as PostType[],
@@ -22,56 +22,74 @@ export const FeedProvider = ({children}: any) => {
     posts,
     fetchPosts: async function () {
       try {
-        // const res = await axios.get('/posts.json');
-        const rawPosts = [...mockPosts];
-        const postsTemp: PostType[] = [];
-        for (let key in rawPosts) {
-          postsTemp.push({
-            ...rawPosts[key],
-            id: Number(key),
+        const rawPosts: PostType[] = [];
+
+        ref.onSnapshot(querySnapshot => {
+          querySnapshot.forEach(doc => {
+            const post = doc.data() as PostType;
+            rawPosts.push({...post, id: doc.ref.id});
           });
-        }
-        setPosts(postsTemp);
+        });
+
+        setPosts(rawPosts);
       } catch (err: any) {
         setMessage(err.message, 'Erro');
       }
     },
     addPost: async function (post: PostType) {
       try {
+        let imgUrl = null;
         startingUpload();
+        if (post.image) {
+          if (post.image.uri.includes('file://')) {
+            post.image.uri = post.image.uri.replace('file://', '');
+          }
 
-        await ref
-          .add({...post, id: null, image: null})
-          .then(resp => {
-            console.warn(Object.keys(resp));
-          })
-          .catch(e => {
-            console.error(e);
-          });
+          const imgRef = storage().ref(`/com/instaclone/${post.image.uri}`);
 
-        // const newPosts = [...posts];
-        // newPosts.push(post);
-        // setPosts(newPosts);
-
+          await imgRef
+            .putFile(post.image.uri)
+            .then(() => {
+              imgRef.getDownloadURL().then(resp => {
+                imgUrl = resp;
+                ref
+                  .add({...post, image: imgUrl, id: Math.random().toString(36)})
+                  .catch(e => {
+                    console.error(e);
+                  });
+              });
+            })
+            .catch(e => console.error(e));
+        } else {
+          await ref
+            .add({...post, image: imgUrl, id: Math.random().toString(36)})
+            .catch(e => {
+              console.error(e);
+            });
+        }
         finishedUpload();
-        // feedInternalContext.fetchPosts();
       } catch (err: any) {
         setMessage(err.message, 'Erro');
         finishedUpload();
       }
     },
-    addComment: async function (postId: number, comment: CommentType) {
+    addComment: async function (postId: any, comment: CommentType) {
       try {
-        const tempPosts = [...posts];
-        tempPosts.find(post => post.id === postId)?.comments.push(comment);
-        setPosts(tempPosts);
-        feedInternalContext.fetchPosts();
-
-        // const res = await axios.get(`/posts/${postId}.json`);
-        // const comments = res.data.comments || [];
-        // comments.push(comment);
-        // await axios.patch(`/posts/${postId}.json?auth=${token}`, {comments});
-        feedInternalContext.fetchPosts();
+        ref
+          .doc(postId)
+          .get()
+          .then(resp => {
+            const post = resp.data() as PostType;
+            post.comments.push(comment);
+            ref
+              .doc(postId)
+              .update(post)
+              .catch(e => console.error(e));
+          })
+          .catch(e => console.error(e))
+          .finally(() => {
+            feedInternalContext.fetchPosts();
+          });
       } catch (err: any) {
         setMessage(err.message, 'Erro');
       }
