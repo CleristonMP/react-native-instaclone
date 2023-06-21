@@ -9,8 +9,16 @@ import {
   Image,
   TouchableOpacity,
   TextInput,
+  PermissionsAndroid,
+  Alert,
 } from 'react-native';
-import {launchCamera, launchImageLibrary} from 'react-native-image-picker';
+import {
+  CameraOptions,
+  ImageLibraryOptions,
+  MediaType,
+  launchCamera,
+  launchImageLibrary,
+} from 'react-native-image-picker';
 import useUser from '../data/hooks/useUser';
 import useFeed from '../data/hooks/useFeed';
 import {PostType} from '../types/post';
@@ -26,6 +34,53 @@ export default (props: any) => {
 
   const canEdit = () => email != null && email.trim() !== '' && !uploading;
 
+  const requestCameraPermission = async () => {
+    if (Platform.OS === 'android') {
+      try {
+        const granted = await PermissionsAndroid.request(
+          PermissionsAndroid.PERMISSIONS.CAMERA,
+          {
+            title: 'Permissão para usar a câmera',
+            message: 'O App precisa da sua permissão para utilizar a câmera',
+            buttonPositive: 'Permitir',
+            buttonNegative: 'Não permitir',
+          },
+        );
+        // If CAMERA Permission is granted
+        return granted === PermissionsAndroid.RESULTS.GRANTED;
+      } catch (err) {
+        console.warn(err);
+        return false;
+      }
+    } else {
+      return true;
+    }
+  };
+
+  const requestExternalWritePermission = async () => {
+    if (Platform.OS === 'android') {
+      try {
+        const granted = await PermissionsAndroid.request(
+          PermissionsAndroid.PERMISSIONS.WRITE_EXTERNAL_STORAGE,
+          {
+            title: 'Permissão para usar a galeria',
+            message: 'O App precisa da sua permissão para utilizar a galeria',
+            buttonPositive: 'Permitir',
+            buttonNegative: 'Não permitir',
+          },
+        );
+        // If WRITE_EXTERNAL_STORAGE Permission is granted
+        return granted === PermissionsAndroid.RESULTS.GRANTED;
+      } catch (err: any) {
+        console.warn(err);
+        Alert.alert('Write permission err', err);
+      }
+      return false;
+    } else {
+      return true;
+    }
+  };
+
   const [newPost, setNewPost] = useState<PostType>({
     id: Math.random(),
     email,
@@ -39,41 +94,61 @@ export default (props: any) => {
     ],
   });
 
-  const pickImage = async () => {
-    await launchImageLibrary(
-      {
-        mediaType: 'photo',
-        includeBase64: true,
-        maxHeight: 600,
-        maxWidth: 800,
-      },
-      resp => {
+  const pickPhoto = async (type: MediaType) => {
+    const options: CameraOptions = {
+      quality: 1,
+      mediaType: type,
+      includeBase64: true,
+      saveToPhotos: true,
+      maxHeight: 600,
+      maxWidth: 800,
+    };
+
+    const isCameraPermitted = await requestCameraPermission();
+    const isStoragePermitted = await requestExternalWritePermission();
+
+    if (isCameraPermitted && isStoragePermitted) {
+      launchCamera(options, resp => {
         if (!resp.didCancel) {
           const pickedImg = resp.assets !== undefined ? resp.assets[0] : null;
           setImage(pickedImg);
           setNewPost({...newPost, image: pickedImg});
+        } else if (resp.errorCode === 'camera_unavailable') {
+          Alert.alert('A câmera não está disponível no seu dispositivo');
+          return;
+        } else if (resp.errorCode === 'permission') {
+          Alert.alert('Sem permissão para utilizar a câmera');
+          return;
+        } else if (resp.errorCode === 'others' && resp.errorMessage) {
+          Alert.alert(resp.errorMessage);
+          return;
         }
-      },
-    );
+      });
+    }
   };
 
-  const pickPhoto = async () => {
-    await launchCamera(
-      {
-        mediaType: 'photo',
-        includeBase64: true,
-        saveToPhotos: true,
-        maxHeight: 600,
-        maxWidth: 800,
-      },
-      resp => {
-        if (!resp.didCancel) {
-          const pickedImg = resp.assets !== undefined ? resp.assets[0] : null;
-          setImage(pickedImg);
-          setNewPost({...newPost, image: pickedImg});
-        }
-      },
-    );
+  const pickImage = async (type: MediaType) => {
+    const options: ImageLibraryOptions = {
+      mediaType: type,
+      includeBase64: true,
+      maxHeight: 600,
+      maxWidth: 800,
+      quality: 1,
+    };
+
+    await launchImageLibrary(options, resp => {
+      if (!resp.didCancel) {
+        const pickedImg = resp.assets !== undefined ? resp.assets[0] : null;
+        setImage(pickedImg);
+        setNewPost({...newPost, image: pickedImg});
+      } else if (resp.errorCode === 'permission') {
+        Alert.alert('Sem permissão para utilizar a galeria');
+        return;
+      } else if (resp.errorCode === 'others' && resp.errorMessage) {
+        Alert.alert(resp.errorMessage);
+        return;
+      }
+    });
   };
 
   const handleCommentChange = (newComment: string) => {
@@ -97,13 +172,13 @@ export default (props: any) => {
         </View>
         <View style={styles.btnRow}>
           <TouchableOpacity
-            onPress={pickPhoto}
+            onPress={() => pickPhoto('photo')}
             disabled={!canEdit()}
             style={[styles.button, canEdit() ? {} : styles.btnDisabled]}>
             <Text style={styles.btnText}>Tirar uma foto</Text>
           </TouchableOpacity>
           <TouchableOpacity
-            onPress={pickImage}
+            onPress={() => pickImage('photo')}
             disabled={!canEdit()}
             style={[styles.button, canEdit() ? {} : styles.btnDisabled]}>
             <Text style={styles.btnText}>Escolha a foto</Text>
