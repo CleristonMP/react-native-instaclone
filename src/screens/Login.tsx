@@ -6,13 +6,27 @@ import {
   TextInput,
   TouchableOpacity,
 } from 'react-native';
+import {UserType} from '../types/user';
 
 import useUser from '../data/hooks/useUser';
 
 export default (props: any) => {
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
+  const [user, setUser] = useState<UserType>({
+    name: '',
+    email: '',
+    password: '',
+  });
+
   const {login} = useUser();
+
+  const handleLogin = () => {
+    login(user);
+    props.navigation.navigate('Home');
+  };
+
+  const handleRegisterBtnTouch = () => {
+    props.navigation.navigate('Register');
+  };
 
   return (
     <View style={styles.container}>
@@ -21,26 +35,20 @@ export default (props: any) => {
         style={styles.input}
         autoFocus={true}
         keyboardType="email-address"
-        value={email}
-        onChangeText={setEmail}
+        value={user.email}
+        onChangeText={email => setUser({...user, email})}
       />
       <TextInput
         placeholder="Senha"
         style={styles.input}
-        value={password}
+        value={user.password}
         secureTextEntry
-        onChangeText={setPassword}
+        onChangeText={password => setUser({...user, password})}
       />
-      <TouchableOpacity
-        onPress={() => login(email, password)}
-        style={styles.button}>
+      <TouchableOpacity onPress={handleLogin} style={styles.button}>
         <Text style={styles.btnText}>Login</Text>
       </TouchableOpacity>
-      <TouchableOpacity
-        onPress={() => {
-          props.navigation.navigate('Register');
-        }}
-        style={styles.button}>
+      <TouchableOpacity onPress={handleRegisterBtnTouch} style={styles.button}>
         <Text style={styles.btnText}>Criar nova conta...</Text>
       </TouchableOpacity>
     </View>

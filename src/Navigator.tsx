@@ -76,9 +76,9 @@ const TabNavigator = () => {
 };
 
 const AuthNavigator = () => {
-  const {email} = useUser();
+  const {user} = useUser();
 
-  const authOrProfile = email ? TabNavigator : Login;
+  const authOrProfile = user.email ? TabNavigator : Login;
 
   return (
     <Stack.Navigator

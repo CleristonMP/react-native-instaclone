@@ -1,19 +1,25 @@
-import React from 'react';
+import React, {useEffect, useState} from 'react';
 import {Text, StyleSheet, View, TouchableOpacity} from 'react-native';
 import {Gravatar} from 'react-native-gravatar';
 import useUser from '../data/hooks/useUser';
 
 export default () => {
-  const {name, email, logout} = useUser();
+  const [email, setEmail] = useState('');
+
+  const {user} = useUser();
+
+  useEffect(() => {
+    setEmail(user.email);
+  }, [user.email]);
 
   const options = {email, secure: true};
 
   return (
     <View style={styles.container}>
       <Gravatar options={options} style={styles.avatar} />
-      <Text style={styles.nickname}>{name}</Text>
+      <Text style={styles.nickname}>{user.name}</Text>
       <Text style={styles.email}>{email}</Text>
-      <TouchableOpacity onPress={logout} style={styles.button}>
+      <TouchableOpacity onPress={() => {}} style={styles.button}>
         <Text style={styles.btnText}>Sair</Text>
       </TouchableOpacity>
     </View>
