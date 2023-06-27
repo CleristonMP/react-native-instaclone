@@ -1,4 +1,4 @@
-import React, {Component} from 'react';
+import React, {useState} from 'react';
 import {
   Text,
   StyleSheet,
@@ -6,57 +6,60 @@ import {
   TextInput,
   TouchableOpacity,
 } from 'react-native';
+import {UserType} from '../types/user';
+import useUser from '../data/hooks/useUser';
 
-export default class Register extends Component {
-  state = {
+export default (props: any) => {
+  const [user, setUser] = useState<UserType>({
     name: '',
     email: '',
     password: '',
+  });
+
+  const {createUser} = useUser();
+
+  const handleRegister = () => {
+    createUser(user);
   };
 
-  handleCancelBtnPress = () => {
-    const componentProps: any = this.props;
-    componentProps.navigation.goBack();
+  const handleCancelBtnPress = () => {
+    props.navigation.goBack();
   };
 
-  render() {
-    return (
-      <View style={styles.container}>
-        <TextInput
-          placeholder="Nome"
-          style={styles.input}
-          autoFocus={true}
-          value={this.state.name}
-          onChangeText={name => this.setState({name})}
-        />
-        <TextInput
-          placeholder="Email"
-          style={styles.input}
-          keyboardType="email-address"
-          value={this.state.email}
-          onChangeText={email => this.setState({email})}
-        />
-        <TextInput
-          placeholder="Senha"
-          style={styles.input}
-          secureTextEntry={true}
-          value={this.state.password}
-          onChangeText={password => this.setState({password})}
-        />
-        <View style={styles.btnsCtr}>
-          <TouchableOpacity
-            onPress={this.handleCancelBtnPress}
-            style={styles.button}>
-            <Text style={styles.btnText}>Cancelar</Text>
-          </TouchableOpacity>
-          <TouchableOpacity onPress={() => {}} style={styles.button}>
-            <Text style={styles.btnText}>Salvar</Text>
-          </TouchableOpacity>
-        </View>
+  return (
+    <View style={styles.container}>
+      <TextInput
+        placeholder="Nome"
+        style={styles.input}
+        autoFocus={true}
+        value={user.name}
+        onChangeText={name => setUser({...user, name})}
+      />
+      <TextInput
+        placeholder="Email"
+        style={styles.input}
+        keyboardType="email-address"
+        value={user.email}
+        onChangeText={email => setUser({...user, email})}
+      />
+      <TextInput
+        placeholder="Senha"
+        style={styles.input}
+        secureTextEntry={true}
+        value={user.password}
+        onChangeText={password => setUser({...user, password})}
+      />
+      <View style={styles.btnsCtr}>
+        <TouchableOpacity onPress={handleCancelBtnPress} style={styles.button}>
+          <Text style={styles.btnText}>Cancelar</Text>
+        </TouchableOpacity>
+        <TouchableOpacity onPress={handleRegister} style={styles.button}>
+          <Text style={styles.btnText}>Salvar</Text>
+        </TouchableOpacity>
       </View>
-    );
-  }
-}
+    </View>
+  );
+};
 
 const styles = StyleSheet.create({
   container: {
