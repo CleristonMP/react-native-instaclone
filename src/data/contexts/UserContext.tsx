@@ -27,25 +27,27 @@ export const UserProvider = ({children}: any) => {
           auth()
             .createUserWithEmailAndPassword(newUser.email, newUser.password)
             .then(resp => {
-              console.log(resp);
+              delete newUser.password;
+              setMessage('Usuário cadastrado com sucesso!', 'Sucesso');
               resp.user.updateProfile({displayName: newUser.name});
               setUser({
                 name: resp.user.displayName ? resp.user.displayName : '',
                 email: resp.user.email ? resp.user.email : '',
               });
             })
-            .catch(err => console.error(err));
+            .catch((err: Error) => {
+              setMessage(err.message, err.name);
+            });
         }
       } catch (err: any) {
         setMessage(err.message, 'Erro');
       }
     },
-    login: function (logUser: UserType) {
+    login: async function (logUser: UserType) {
       if (logUser.password) {
         auth()
           .signInWithEmailAndPassword(logUser.email, logUser.password)
           .then(resp => {
-            console.log(resp);
             if (resp.user.displayName && resp.user.email) {
               setUser({
                 name: resp.user.displayName,
@@ -53,12 +55,20 @@ export const UserProvider = ({children}: any) => {
               });
             }
           })
-          .catch(err => console.error(err));
+          .catch((err: Error) => {
+            setMessage(err.message, err.name);
+          });
       }
     },
     logout: function () {
-      // setName('');
-      // setEmail('');
+      auth()
+        .signOut()
+        .then(() => setMessage('Usuário saiu', 'Logout'));
+      setUser({
+        email: '',
+        name: '',
+        password: '',
+      });
     },
   };
 

@@ -14,10 +14,10 @@ export default ({postId}: any) => {
   const [comment, setComment] = useState('');
   const [editMode, setEditMode] = useState(false);
   const {addComment} = useFeed();
-  const {name: nickname} = useUser();
+  const {user} = useUser();
 
   const handleAddComment = () => {
-    addComment(postId, {nickname, comment});
+    addComment(postId, {nickname: user.name, comment});
     setComment('');
     setEditMode(false);
   };

@@ -6,11 +6,14 @@ import icon from '../../assets/imgs/icon.png';
 import useUser from '../data/hooks/useUser';
 
 export default () => {
-  const {name, email} = useUser();
+  const {user} = useUser();
 
-  const username = name || 'Anonymous';
-  const gravatar = email ? (
-    <Gravatar options={{email, secure: true}} style={styles.avatar} />
+  const username = user.name || 'Anonymous';
+  const gravatar = user.email ? (
+    <Gravatar
+      options={{email: user.email, secure: true}}
+      style={styles.avatar}
+    />
   ) : null;
 
   return (

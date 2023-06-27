@@ -25,10 +25,12 @@ export const FeedProvider = ({children}: any) => {
         const rawPosts: PostType[] = [];
 
         ref.onSnapshot(querySnapshot => {
-          querySnapshot.forEach(doc => {
-            const post = doc.data() as PostType;
-            rawPosts.push({...post, id: doc.ref.id});
-          });
+          if (querySnapshot) {
+            querySnapshot.forEach(doc => {
+              const post = doc.data() as PostType;
+              rawPosts.push({...post, id: doc.ref.id});
+            });
+          }
         });
 
         setPosts(rawPosts);
@@ -54,19 +56,22 @@ export const FeedProvider = ({children}: any) => {
                 imgUrl = resp;
                 ref
                   .add({...post, image: imgUrl, id: Math.random().toString(36)})
-                  .catch(e => {
-                    console.error(e);
+                  .catch((err: Error) => {
+                    setMessage(err.message, err.name);
                   });
               });
             })
-            .catch(e => console.error(e));
+            .catch((err: Error) => {
+              setMessage(err.message, err.name);
+            });
         } else {
           await ref
             .add({...post, image: imgUrl, id: Math.random().toString(36)})
-            .catch(e => {
-              console.error(e);
+            .catch((err: Error) => {
+              setMessage(err.message, err.name);
             });
         }
+        feedInternalContext.fetchPosts();
         finishedUpload();
       } catch (err: any) {
         setMessage(err.message, 'Erro');
@@ -84,9 +89,13 @@ export const FeedProvider = ({children}: any) => {
             ref
               .doc(postId)
               .update(post)
-              .catch(e => console.error(e));
+              .catch((err: Error) => {
+                setMessage(err.message, err.name);
+              });
           })
-          .catch(e => console.error(e))
+          .catch((err: Error) => {
+            setMessage(err.message, err.name);
+          })
           .finally(() => {
             feedInternalContext.fetchPosts();
           });

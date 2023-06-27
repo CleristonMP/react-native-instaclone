@@ -12,7 +12,7 @@ import AddComment from './AddComment';
 import useUser from '../data/hooks/useUser';
 
 export default (props: any) => {
-  const {email} = useUser();
+  const {user} = useUser();
 
   const getImage = (source: any): ImageSourcePropType => {
     if (typeof source === 'number') {
@@ -24,7 +24,7 @@ export default (props: any) => {
     return 0;
   };
 
-  const addComment = email ? <AddComment postId={props.id} /> : null;
+  const addComment = user.email ? <AddComment postId={props.id} /> : null;
 
   return (
     <View style={styles.container}>

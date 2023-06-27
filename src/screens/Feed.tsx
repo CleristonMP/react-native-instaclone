@@ -17,7 +17,7 @@ export default () => {
       <Header />
       <FlatList
         data={posts}
-        keyExtractor={item => `${item.id}`}
+        keyExtractor={(item, index) => String(index)}
         renderItem={({item}) => <Post key={item.id} {...item} />}
       />
     </View>

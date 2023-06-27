@@ -29,10 +29,11 @@ export default (props: any) => {
   const [comment, setComment] = useState('');
 
   const {addPost} = useFeed();
-  const {name: nickname, email} = useUser();
+  const {user} = useUser();
   const {uploading} = useEvent();
 
-  const canEdit = () => email != null && email.trim() !== '' && !uploading;
+  const canEdit = () =>
+    user.email != null && user.email.trim() !== '' && !uploading;
 
   const requestCameraPermission = async () => {
     if (Platform.OS === 'android') {
@@ -83,12 +84,12 @@ export default (props: any) => {
 
   const [newPost, setNewPost] = useState<PostType>({
     id: Math.random(),
-    email,
-    nickname,
+    email: user.email,
+    nickname: user.name,
     image,
     comments: [
       {
-        nickname,
+        nickname: user.name,
         comment,
       },
     ],
@@ -153,7 +154,7 @@ export default (props: any) => {
 
   const handleCommentChange = (newComment: string) => {
     setComment(newComment);
-    setNewPost({...newPost, comments: [{nickname, comment}]});
+    setNewPost({...newPost, comments: [{nickname: user.name, comment}]});
   };
 
   const save = () => {

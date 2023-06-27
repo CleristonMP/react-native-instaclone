@@ -6,7 +6,7 @@ import useUser from '../data/hooks/useUser';
 export default () => {
   const [email, setEmail] = useState('');
 
-  const {user} = useUser();
+  const {user, logout} = useUser();
 
   useEffect(() => {
     setEmail(user.email);
@@ -14,12 +14,16 @@ export default () => {
 
   const options = {email, secure: true};
 
+  const handleLogout = () => {
+    logout();
+  };
+
   return (
     <View style={styles.container}>
       <Gravatar options={options} style={styles.avatar} />
       <Text style={styles.nickname}>{user.name}</Text>
       <Text style={styles.email}>{email}</Text>
-      <TouchableOpacity onPress={() => {}} style={styles.button}>
+      <TouchableOpacity onPress={handleLogout} style={styles.button}>
         <Text style={styles.btnText}>Sair</Text>
       </TouchableOpacity>
     </View>
