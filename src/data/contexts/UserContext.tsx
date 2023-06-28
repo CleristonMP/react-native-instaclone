@@ -1,6 +1,6 @@
-import React, {createContext, useState} from 'react';
+import React, {createContext, useEffect, useState} from 'react';
 import {UserType} from '../../types/user';
-import auth from '@react-native-firebase/auth';
+import auth, {FirebaseAuthTypes} from '@react-native-firebase/auth';
 import useEvent from '../hooks/useEvent';
 
 const UserContext = createContext({
@@ -18,6 +18,33 @@ export const UserProvider = ({children}: any) => {
   });
 
   const {setMessage} = useEvent();
+
+  const [initializing, setInitializing] = useState(false);
+
+  function onAuthStateChanged(loggedUser: any) {
+    if (loggedUser) {
+      const loggedUserTyped = loggedUser as FirebaseAuthTypes.User;
+      const customUser: UserType = {
+        name: loggedUserTyped.displayName ? loggedUserTyped.displayName : '',
+        email: loggedUserTyped.email ? loggedUserTyped.email : '',
+      };
+
+      setUser(customUser);
+      if (initializing) {
+        setInitializing(false);
+      }
+    }
+  }
+
+  useEffect(() => {
+    const subscriber = auth().onAuthStateChanged(onAuthStateChanged);
+    return subscriber; // unsubscribe on unmount
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  if (initializing) {
+    return null;
+  }
 
   const userInternalContext = {
     user,
